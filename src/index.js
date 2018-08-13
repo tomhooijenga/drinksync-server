@@ -1,11 +1,10 @@
-const app = require('express')();
-const http = require('http').Server(app);
-const io = require('socket.io')(http, {
+const server = require('./server');
+const io = require('socket.io')(server, {
     serveClient: false
 });
-const join = require('./user/join')
+const join = require('./user/join');
 const database = require('./database')
-const generate = require('nanoid/generate')
+const generate = require('nanoid/generate');
 
 io.on('connection', function (socket) {
     socket.on('user.join', (token) => {
@@ -106,5 +105,3 @@ io.on('connection', function (socket) {
         }
     })
 });
-
-http.listen(3000, function () {});
