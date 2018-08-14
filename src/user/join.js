@@ -1,7 +1,7 @@
 const database = require('../database');
 const uuid = require('uuid/v4');
 
-let userId = 1;
+let userId = 0;
 
 module.exports = function (socket, token) {
     let user;
@@ -15,7 +15,8 @@ module.exports = function (socket, token) {
         user = database.users[userId] = {
             id: userId,
             drinks: 0,
-            name: '',
+            permille: 0,
+            name: `AA member ${userId}`,
             groups: []
         };
     }
