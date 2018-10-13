@@ -9,9 +9,12 @@ db('cron').first().then(({last_updated}) => {
 
     return db('user').update('ppm', db.raw('GREATEST(0, ppm - ?)', [ppm]));
 }).then(() => {
-    db('cron').where('id', 1).update('last_updated', new Date());
+    db('cron')
+        .update('last_updated', new Date())
+        .where('id', 1)
+        .then();
 
-    return db('group').select()
+    return db('group').select().then();
 }).then(groups => {
     groups.forEach(group => {
         db('group_user')
