@@ -4,8 +4,11 @@ const port = process.env.PORT || 8080;
 const app = http.createServer(function (req, res) {
 
     if (req.url === '/update-ppm') {
-        console.log('Executing [/bin/update-ppm]')
-        require('./bin/update-ppm')
+        try {
+            require('./bin/update-ppm')();
+        } catch (e) {
+            console.trace(e);
+        }
     }
 
     res.writeHead(200);

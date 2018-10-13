@@ -2,38 +2,38 @@ const db = require('../database2');
 const io = require('../socket');
 const {PPM_PER_HOUR} = require("../constants");
 
-db.raw(`
-  SELECT
-    EXTRACT(epoch FROM now() - last_updated) AS elapsed
-  FROM cron
-  WHERE id = 1
-`).then(({rows}) => {
+console.log('Executing [/bin/update-ppm]');
+
+module.exports = async function () {
+    const {rows} = await db.raw(`
+      SELECT
+        EXTRACT(epoch FROM now() - last_updated) AS elapsed
+      FROM cron
+      WHERE id = 1
+    `);
+
     const elapsed = rows[0].elapsed;
     const hours = elapsed / 3600;
     const ppm = Math.round(PPM_PER_HOUR * hours);
 
-    console.log(`${hours} hours elapsed, burning ${ppm} ppm`);
+    const users = await db('user')
+        .update('ppm', db.raw('GREATEST(0, ppm - ?)', [ppm]));
 
-    return db('user')
-        .update('ppm', db.raw('GREATEST(0, ppm - ?)', [ppm]))
-        .then(updated => {
-            console.log(`${updated} users updated`)
-        });
-}).then(() => {
-    db('cron')
+    console.log(`${hours} hours elapsed, burning ${ppm} ppm`);
+    console.log(`${users} users updated`);
+
+    const cron = await db('cron')
         .update('last_updated', 'now()')
         .where('id', 1)
-        .returning('*')
-        .then(updated => {
-            if (updated.length === 0) {
-                console.error('Cron time not updated');
-            } else {
-                console.log(`Set cron to ${updated[0].last_updated}`);
-            }
-        });
+        .returning('*');
 
-    return db('group').select();
-}).then(groups => {
+    if (cron.length === 0) {
+        console.error('Cron time not updated');
+    } else {
+        console.log(`Set cron to ${cron[0].last_updated}`);
+    }
+
+    const groups = await db('group').select();
     console.log(`Notifying ${groups.length} groups`);
 
     groups.forEach(group => {
@@ -47,4 +47,4 @@ db.raw(`
                 io.to(group.name).emit('group.update', group);
             })
     })
-});
+};
