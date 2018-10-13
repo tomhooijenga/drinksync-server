@@ -2,19 +2,24 @@ const db = require('../database2');
 const io = require('../socket');
 const {PPM_PER_HOUR} = require("../constants");
 
-db('cron').first().then(({last_updated}) => {
-    const elapsed = new Date().getTime() - last_updated.getTime();
-    const hours = elapsed / 3600000;
+db.raw(`
+  SELECT
+    EXTRACT(epoch FROM now() - last_updated) AS elapsed
+  FROM cron
+  WHERE id = 1
+`).then(({rows}) => {
+    const elapsed = rows[0].elapsed;
+    const hours = elapsed / 3600;
     const ppm = Math.round(PPM_PER_HOUR * hours);
 
-    return db('user').update('ppm', db.raw('GREATEST(0, ppm - ?)', [ppm]));
+    return db('user').update('ppm', db.raw('GREATEST(0, ppm - ?)', [ppm]))
 }).then(() => {
     db('cron')
-        .update('last_updated', new Date())
+        .update('last_updated', 'now()')
         .where('id', 1)
         .then();
 
-    return db('group').select().then();
+    return db('group').select();
 }).then(groups => {
     groups.forEach(group => {
         db('group_user')
