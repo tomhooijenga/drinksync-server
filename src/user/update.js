@@ -9,7 +9,10 @@ module.exports = async function (socket, token, data) {
 
     if (data.drinks !== undefined) {
         update.drinks = Math.max(0, data.drinks);
-        update.ppm = update.drinks * PPM_PER_UNIT
+        update.ppm = db.raw(
+            'LEAST(GREATEST(0, "ppm" + (? - drinks) * ?), 100)',
+            [update.drinks, PPM_PER_UNIT]
+        )
     }
 
     const [user] = await db('user')
