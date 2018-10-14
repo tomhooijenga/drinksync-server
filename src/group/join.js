@@ -1,4 +1,4 @@
-const db = require('../database2');
+const db = require('../database');
 
 module.exports = async function (socket, token, name) {
     const user = await db('user')

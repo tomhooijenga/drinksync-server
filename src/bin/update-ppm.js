@@ -1,4 +1,4 @@
-const db = require('../database2');
+const db = require('../database');
 const io = require('../socket');
 const {PPM_PER_HOUR} = require("../constants");
 

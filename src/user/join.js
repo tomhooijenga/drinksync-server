@@ -1,4 +1,4 @@
-const db = require('../database2');
+const db = require('../database');
 const uuid = require('uuid/v4');
 
 const defaultUser = Object.freeze({

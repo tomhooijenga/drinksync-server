@@ -1,5 +1,5 @@
 const {PPM_PER_UNIT} = require("../constants");
-const db = require('../database2');
+const db = require('../database');
 const io = require('../socket');
 
 module.exports = async function (socket, token, data) {

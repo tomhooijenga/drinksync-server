@@ -1,4 +1,4 @@
-const db = require('../database2');
+const db = require('../database');
 
 module.exports = async function get(socket, token, name, send) {
     const group = await db('group')
