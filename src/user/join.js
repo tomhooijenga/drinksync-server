@@ -8,9 +8,8 @@ const defaultUser = Object.freeze({
 });
 
 module.exports = async function (socket, token) {
-    let user = await db
-        .select('*')
-        .from('user')
+    let user = await db('user')
+        .select()
         .where('token', token)
         .first();
 

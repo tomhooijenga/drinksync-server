@@ -17,7 +17,10 @@ module.exports = async function () {
     const ppm = Math.round(PPM_PER_HOUR * hours);
 
     const users = await db('user')
-        .update('ppm', db.raw('GREATEST(0, ppm - ?)', [ppm]));
+        .update({
+            updated: 'now()',
+            ppm: db.raw('GREATEST(0, ppm - ?)', [ppm])
+        });
 
     console.log(`${hours} hours elapsed, burning ${ppm} ppm`);
     console.log(`${users} users updated`);

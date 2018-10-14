@@ -4,7 +4,8 @@ const io = require('../socket');
 
 module.exports = async function (socket, token, data) {
     const update = {
-        name: data.name
+        name: data.name,
+        updated: 'now()'
     };
 
     if (data.drinks !== undefined) {
