@@ -1,6 +1,5 @@
 const {PPM_PER_UNIT} = require("../constants");
 const db = require('../database');
-const io = require('../socket');
 
 module.exports = async function (socket, token, data) {
     const update = {
@@ -29,6 +28,6 @@ module.exports = async function (socket, token, data) {
     socket.emit('user.update', user);
 
     joins.forEach(group => {
-        io.to(group.name).emit('user.update', user);
+        socket.to(group.name).emit('user.update', user);
     });
 };

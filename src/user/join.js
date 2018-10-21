@@ -7,7 +7,7 @@ const defaultUser = Object.freeze({
     name: `Username`
 });
 
-module.exports = async function (socket, token) {
+module.exports = async function (socket, token, send) {
     let user = await db('user')
         .select()
         .where('token', token)
@@ -42,7 +42,7 @@ module.exports = async function (socket, token) {
         })
     );
 
-    socket.emit('user.join', {
+    send({
         user,
         groups
     });
