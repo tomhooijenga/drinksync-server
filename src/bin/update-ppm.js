@@ -19,7 +19,8 @@ module.exports = async function () {
     const users = await db('user')
         .update({
             updated: 'now()',
-            ppm: db.raw('GREATEST(0, ppm - ?)', [ppm])
+            ppm: db.raw('GREATEST(0, ppm - ?)', [ppm]),
+            drinks: db.raw('CASE WHEN (ppm > 0) THEN drinks ELSE 0 END')
         });
 
     console.log(`${hours} hours elapsed, burning ${ppm} ppm`);
